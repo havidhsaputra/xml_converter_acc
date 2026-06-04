@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>XML Converter Accurate</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+        .drop-zone { border: 2px dashed #cbd5e1; transition: all 0.3s ease; }
+        .drop-zone.active { border-color: #2563eb; background-color: #eff6ff; }
+        .sidebar-item { transition: all 0.2s; border-right: 4px solid transparent; }
+        .sidebar-item.active { background-color: #eff6ff; color: #2563eb; border-right-color: #2563eb; }
+        .custom-scrollbar::-webkit-scrollbar { width: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+    </style>
+</head>
+<body class="bg-slate-50 min-h-screen flex items-stretch">
+
+    <!-- LOGIN CONTAINER -->
+    <div id="loginContainer" class="w-full min-h-screen flex items-center justify-center p-4 bg-slate-50">
+        <div class="w-full max-w-md bg-white rounded-3xl shadow-xl border border-slate-200/80 p-8 md:p-10 transition-all">
+            <!-- Header Login -->
+            <div class="text-center mb-8">
+                <div class="mx-auto w-12 h-12 bg-blue-100 rounded-2xl flex items-center justify-center mb-4 text-blue-600">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                    </svg>
+                </div>
+                <h1 class="text-2xl font-bold text-slate-800">XML Converter</h1>
+                <p class="text-slate-500 text-sm mt-1">Masuk untuk mengakses alat konversi Accurate</p>
+            </div>
+
+            <!-- Form Login -->
+            <form onsubmit="handleLogin(event)" class="space-y-5">
+                <!-- Username -->
+                <div>
+                    <label for="usernameInput" class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Username</label>
+                    <input type="text" id="usernameInput" required placeholder="Masukkan username" class="w-full px-4 py-3 border border-slate-200 rounded-xl outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100 transition-all text-sm">
+                </div>
+
+                <!-- Password -->
+                <div>
+                    <label for="passwordInput" class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Kata Sandi</label>
+                    <input type="password" id="passwordInput" required placeholder="Masukkan kata sandi" class="w-full px-4 py-3 border border-slate-200 rounded-xl outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100 transition-all text-sm">
+                </div>
+
+                <!-- Remember Me & Error Msg -->
+                <div class="flex items-center justify-between">
+                    <label class="flex items-center space-x-2 cursor-pointer select-none">
+                        <input type="checkbox" id="rememberMe" class="rounded text-blue-600 focus:ring-blue-500 h-4 w-4 border-slate-300">
+                        <span class="text-sm text-slate-500 font-medium">Ingat Saya</span>
+                    </label>
+                </div>
+
+                <!-- Error Message -->
+                <div id="loginError" class="hidden text-xs text-red-500 bg-red-50 border border-red-200 rounded-xl px-4 py-3 text-center"></div>
+
+                <!-- Submit Button -->
+                <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3.5 rounded-xl transition-all shadow-lg shadow-blue-100 flex items-center justify-center space-x-2">
+                    <span>Masuk</span>
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- MAIN APP CONTAINER -->
+    <div id="appContainer" class="w-full flex-1 flex text-slate-900 hidden">
+        <!-- Sidebar -->
+        <aside class="w-64 bg-white border-r border-slate-200 flex-shrink-0 hidden md:flex flex-col h-screen sticky top-0 shadow-sm">
+            <div class="p-6 border-b border-slate-100">
+                <h1 class="text-xl font-bold text-slate-800">XML Converter</h1>
+                <p class="text-[10px] text-blue-600 font-bold uppercase tracking-widest">Vercel Production Ready</p>
+            </div>
+            <nav class="flex-1 p-4 space-y-1 overflow-y-auto custom-scrollbar">
+                <!-- Penjualan Section -->
+                <div class="px-4 py-2 text-[10px] font-bold text-slate-400 uppercase tracking-wider">Siklus Penjualan</div>
+                <button onclick="switchModule('SO')" id="btn-SO" class="sidebar-item w-full text-left flex items-center space-x-3 px-4 py-2 rounded-lg text-sm font-semibold text-slate-600 hover:bg-slate-50"><span>Sales Order</span></button>
+                <button onclick="switchModule('DO')" id="btn-DO" class="sidebar-item w-full text-left flex items-center space-x-3 px-4 py-2 rounded-lg text-sm font-semibold text-slate-600 hover:bg-slate-50"><span>Delivery Order</span></button>
+                <button onclick="switchModule('SI')" id="btn-SI" class="sidebar-item w-full text-left flex items-center space-x-3 px-4 py-2 rounded-lg text-sm font-semibold text-slate-600 hover:bg-slate-50"><span>Sales Invoice</span></button>
+                <button onclick="switchModule('SR')" id="btn-SR" class="sidebar-item w-full text-left flex items-center space-x-3 px-4 py-2 rounded-lg text-sm font-semibold text-slate-600 hover:bg-slate-50"><span>Sales Return</span></button>
+                <button onclick="switchModule('CR')" id="btn-CR" class="sidebar-item w-full text-left flex items-center space-x-3 px-4 py-2 rounded-lg text-sm font-semibold text-slate-600 hover:bg-slate-50"><span>Sales Receipt</span></button>
+
+                <!-- Pembelian Section -->
+                <div class="px-4 py-2 mt-4 text-[10px] font-bold text-slate-400 uppercase tracking-wider">Siklus Pembelian</div>
+                <button onclick="switchModule('PR')" id="btn-PR" class="sidebar-item w-full text-left flex items-center space-x-3 px-4 py-2 rounded-lg text-sm font-semibold text-slate-600 hover:bg-slate-50"><span>Purchase Request</span></button>
+                <button onclick="switchModule('PO')" id="btn-PO" class="sidebar-item w-full text-left flex items-center space-x-3 px-4 py-2 rounded-lg text-sm font-semibold text-slate-600 hover:bg-slate-50"><span>Purchase Order</span></button>
+                <button onclick="switchModule('RI')" id="btn-RI" class="sidebar-item w-full text-left flex items-center space-x-3 px-4 py-2 rounded-lg text-sm font-semibold text-slate-600 hover:bg-slate-50"><span>Received Item</span></button>
+                <button onclick="switchModule('PI')" id="btn-PI" class="sidebar-item w-full text-left flex items-center space-x-3 px-4 py-2 rounded-lg text-sm font-semibold text-slate-600 hover:bg-slate-50"><span>Purchase Invoice</span></button>
+                <button onclick="switchModule('PUR_RET')" id="btn-PUR_RET" class="sidebar-item w-full text-left flex items-center space-x-3 px-4 py-2 rounded-lg text-sm font-semibold text-slate-600 hover:bg-slate-50"><span>Purchase Return</span></button>
+                <button onclick="switchModule('VP')" id="btn-VP" class="sidebar-item w-full text-left flex items-center space-x-3 px-4 py-2 rounded-lg text-sm font-semibold text-slate-600 hover:bg-slate-50"><span>Vendor Payment</span></button>
+
+                <!-- Persediaan Section -->
+                <div class="px-4 py-2 mt-4 text-[10px] font-bold text-slate-400 uppercase tracking-wider">Persediaan</div>
+                <button onclick="switchModule('IT')" id="btn-IT" class="sidebar-item w-full text-left flex items-center space-x-3 px-4 py-2 rounded-lg text-sm font-semibold text-slate-600 hover:bg-slate-50"><span>Item Transfer</span></button>
+
+                <!-- Kas & Bank Section -->
+                <div class="px-4 py-2 mt-4 text-[10px] font-bold text-slate-400 uppercase tracking-wider">Kas & Bank</div>
+                <button onclick="switchModule('OP')" id="btn-OP" class="sidebar-item w-full text-left flex items-center space-x-3 px-4 py-2 rounded-lg text-sm font-semibold text-slate-600 hover:bg-slate-50"><span>Other Payment</span></button>
+                <button onclick="switchModule('OD')" id="btn-OD" class="sidebar-item w-full text-left flex items-center space-x-3 px-4 py-2 rounded-lg text-sm font-semibold text-slate-600 hover:bg-slate-50"><span>Other Deposit</span></button>
+
+                <!-- GL Section -->
+                <div class="px-4 py-2 mt-4 text-[10px] font-bold text-slate-400 uppercase tracking-wider">Buku Besar</div>
+                <button onclick="switchModule('JV')" id="btn-JV" class="sidebar-item active w-full text-left flex items-center space-x-3 px-4 py-2 rounded-lg text-sm font-semibold text-slate-600 hover:bg-slate-50"><span>Journal Voucher</span></button>
+            </nav>
+            <!-- Sidebar Footer with Logout -->
+            <div class="p-4 border-t border-slate-100 flex flex-col space-y-2">
+                <button onclick="handleLogout()" class="w-full flex items-center space-x-3 px-4 py-2.5 rounded-lg text-sm font-semibold text-red-600 hover:bg-red-50 transition-all">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                    </svg>
+                    <span>Keluar</span>
+                </button>
+            </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="flex-1 flex flex-col min-w-0">
+            <header class="md:hidden bg-white border-b p-4 flex justify-between items-center sticky top-0 z-10">
+                <h1 class="font-bold text-slate-800">XML Converter</h1>
+                <div class="flex items-center space-x-2">
+                    <span id="mobileModuleLabel" class="text-xs font-bold text-blue-600 bg-blue-50 px-2 py-1 rounded">JV</span>
+                    <button onclick="handleLogout()" class="text-red-500 p-1">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                        </svg>
+                    </button>
+                </div>
+            </header>
+
+            <div class="p-4 md:p-12 max-w-4xl mx-auto w-full">
+                <div class="mb-8">
+                    <h2 id="moduleTitle" class="text-2xl font-bold text-slate-800">Journal Voucher</h2>
+                    <p id="moduleDesc" class="text-slate-500 text-sm">Konversi transaksi Jurnal Umum (General Ledger) ke format Accurate.</p>
+                </div>
+
+                <div class="space-y-6">
+                    <!-- Dropzone -->
+                    <div id="dropZone" class="drop-zone bg-white p-16 rounded-3xl shadow-sm border-2 border-dashed border-slate-200 flex flex-col items-center justify-center cursor-pointer hover:shadow-md hover:border-blue-300 transition-all">
+                        <div class="bg-blue-50 p-6 rounded-full mb-4">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                            </svg>
+                        </div>
+                        <p class="text-slate-700 font-semibold text-xl text-center">Tarik file Excel Anda ke sini</p>
+                        <p class="text-slate-400 text-sm mt-2">Format yang didukung: .xlsx, .xls, .csv</p>
+                        <input type="file" id="fileInput" class="hidden" accept=".xlsx, .xls, .csv">
+                    </div>
+
+                    <!-- Result Area -->
+                    <div id="resultArea" class="hidden space-y-4">
+                        <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                            <div class="flex items-center justify-between mb-6">
+                                <div class="flex items-center space-x-3">
+                                    <div class="p-3 bg-green-100 rounded-xl">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                        </svg>
+                                    </div>
+                                    <div>
+                                        <h3 id="fileNameLabel" class="font-bold text-slate-800 text-sm">nama_file.xlsx</h3>
+                                        <p id="fileStats" class="text-xs text-slate-500 font-medium">Siap diproses.</p>
+                                    </div>
+                                </div>
+                                <button onclick="resetFile()" class="px-4 py-2 text-xs font-bold text-red-500 bg-red-50 rounded-lg hover:bg-red-100 transition-colors">Ganti File</button>
+                            </div>
+
+                            <button id="convertBtn" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 rounded-xl transition-all shadow-lg shadow-blue-100 flex items-center justify-center space-x-2">
+                                <span>Konversi ke XML Accurate</span>
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                                </svg>
+                            </button>
+                        </div>
+
+                        <div class="bg-slate-100 p-4 rounded-xl border border-slate-200">
+                            <p class="text-[10px] text-slate-500 uppercase font-bold tracking-widest mb-2">Log Deteksi Kolom:</p>
+                            <div id="detectionLog" class="text-[11px] text-slate-600 space-y-1 font-mono max-h-48 overflow-y-auto custom-scrollbar"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Toast -->
+    <div id="toast" class="fixed bottom-8 right-8 transform translate-y-20 opacity-0 transition-all duration-300 bg-slate-800 text-white px-6 py-3 rounded-xl shadow-2xl flex items-center space-x-2 z-50">
+        <span id="toastMsg">Berhasil!</span>
+    </div>
+
+    <script>
+        const fileInput = document.getElementById('fileInput');
+        const dropZone = document.getElementById('dropZone');
+        const resultArea = document.getElementById('resultArea');
+        const fileNameLabel = document.getElementById('fileNameLabel');
+        const fileStats = document.getElementById('fileStats');
+        const convertBtn = document.getElementById('convertBtn');
+        const detectionLog = document.getElementById('detectionLog');
+        const moduleTitle = document.getElementById('moduleTitle');
+        const moduleDesc = document.getElementById('moduleDesc');
+        const mobileModuleLabel = document.getElementById('mobileModuleLabel');
+
+        const loginContainer = document.getElementById('loginContainer');
+        const appContainer = document.getElementById('appContainer');
+        const usernameInput = document.getElementById('usernameInput');
+        const passwordInput = document.getElementById('passwordInput');
+        const rememberMe = document.getElementById('rememberMe');
+        const loginError = document.getElementById('loginError');
+
+        let currentModule = 'JV';
+        let excelData = [];
+        let headers = [];
+        let mapping = {};
+        let groupKey = '';
+
+        const moduleConfigs = {
+            'JV': { title: 'Journal Voucher', desc: 'Konversi transaksi Jurnal Umum (General Ledger).', 
+                rules: { 
+                    JVNUMBER: ['JVNUMBER', 'NO BUKTI', 'VOUCHER NO'], TRANSDATE: ['TRANSDATE', 'TANGGAL', 'DATE'], TRANSDESCRIPTION: ['TRANSDESCRIPTION', 'KETERANGAN HEADER'], GLACCOUNT: ['GLACCOUNT', 'ACCOUNT NO', 'NO AKUN'], GLAMOUNT: ['GLAMOUNT', 'AMOUNT', 'NILAI'], DESCRIPTION: ['DESCRIPTION', 'KETERANGAN BARIS'], CUSTOMERNO: ['CUSTOMERNO', 'PELANGGAN NO'], VENDORNO: ['VENDORNO', 'PEMASOK NO'], CURRENCYNAME: ['CURRENCYNAME', 'CURRENCY'] 
+                } 
+            },
+            'SI': { title: 'Sales Invoice', desc: 'Konversi Faktur Penjualan ke pelanggan.', 
+                rules: { 
+                    INVOICENO: ['INVOICENO', 'NO FAKTUR', 'INVOICE NO'], INVOICEDATE: ['INVOICEDATE', 'TANGGAL FAKTUR', 'DATE'], CUSTOMERID: ['CUSTOMERID', 'KODE PELANGGAN'], ITEMNO: ['ITEMNO', 'KODE BARANG'], QUANTITY: ['QUANTITY', 'QTY'], UNITPRICE: ['UNITPRICE', 'HARGA SATUAN'], ITEMUNIT: ['ITEMUNIT', 'SATUAN'], WAREHOUSEID: ['WAREHOUSEID', 'GUDANG'], PROJECTID: ['PROJECTID', 'PROYEK'], DEPTID: ['DEPTID', 'DEPARTEMEN'], CURRENCYNAME: ['CURRENCYNAME', 'CURRENCY'] 
+                } 
+            },
+            'SO': { title: 'Sales Order', desc: 'Konversi Pesanan Penjualan dari pelanggan.', 
+                rules: { 
+                    SONO: ['SONO', 'NO PESANAN', 'SO NO'], SODATE: ['SODATE', 'TANGGAL PESANAN', 'DATE'], CUSTOMERID: ['CUSTOMERID', 'KODE PELANGGAN'], ITEMNO: ['ITEMNO', 'KODE BARANG'], QUANTITY: ['QUANTITY', 'QTY'], UNITPRICE: ['UNITPRICE', 'HARGA SATUAN'], ITEMUNIT: ['ITEMUNIT', 'SATUAN'], CURRENCYNAME: ['CURRENCYNAME', 'CURRENCY'] 
+                } 
+            },
+            'SR': { title: 'Sales Return', desc: 'Konversi Retur Penjualan dari pelanggan.', 
+                rules: { 
+                    INVOICENO: ['INVOICENO', 'NO RETUR', 'RETURN NO'], INVOICEDATE: ['INVOICEDATE', 'TANGGAL RETUR', 'DATE'], CUSTOMERID: ['CUSTOMERID', 'KODE PELANGGAN'], ITEMNO: ['ITEMNO', 'KODE BARANG'], QUANTITY: ['QUANTITY', 'QTY'], WAREHOUSEID: ['WAREHOUSEID', 'GUDANG'] 
+                } 
+            },
+            'DO': { title: 'Delivery Order', desc: 'Konversi Pengiriman Pesanan ke pelanggan.', 
+                rules: { 
+                    DELIVERYORDERNO: ['DELIVERYORDER', 'NO DO', 'DO NO'], SHIPDATE: ['SHIPDATE', 'TANGGAL DO', 'DATE'], CUSTOMERID: ['CUSTOMERID', 'KODE PELANGGAN'], ITEMNO: ['ITEMNO', 'KODE BARANG'], QUANTITY: ['QUANTITY', 'QTY'], WAREHOUSEID: ['WAREHOUSEID', 'GUDANG'] 
+                } 
+            },
+            'CR': { title: 'Sales Receipt', desc: 'Konversi Penerimaan Kas/Bank dari pelanggan.', 
+                rules: { 
+                    SEQUENCENO: ['SEQUENCENO', 'NO BUKTI', 'CR NO'], PAYMENTDATE: ['PAYMENTDATE', 'TANGGAL BAYAR', 'DATE'], BILLTOID: ['BILLTOID', 'CUSTOMERID'], BANKACCOUNT: ['BANKACCOUNT', 'AKUN BANK'], ARINVOICEID: ['ARINVOICEID', 'NO FAKTUR'], PAYMENTAMOUNT: ['PAYMENTAMOUNT', 'JUMLAH BAYAR'], DISCTAKENAMOUNT: ['DISCTAKENAMOUNT', 'DISKON'], CURRENCYNAME: ['CURRENCYNAME', 'CURRENCY'] 
+                } 
+            },
+            'PR': { title: 'Purchase Request', desc: 'Konversi Permintaan Pembelian internal.', 
+                rules: { 
+                    REQNO: ['REQNO', 'NO REQ', 'REQUEST NO'], REQDATE: ['REQDATE', 'TANGGAL REQ', 'DATE'], ITEMNO: ['ITEMNO', 'KODE BARANG'], QUANTITY: ['QUANTITY', 'QTY'], ITEMUNIT: ['ITEMUNIT', 'SATUAN'] 
+                } 
+            },
+            'PO': { title: 'Purchase Order', desc: 'Konversi Pesanan Pembelian ke pemasok.', 
+                rules: { 
+                    PONO: ['PONO', 'NO PO', 'ORDER NO'], PODATE: ['PODATE', 'TANGGAL PO', 'DATE'], VENDORREF: ['VENDORREF', 'VENDOR NO'], ITEMNO: ['ITEMNO', 'KODE BARANG'], QUANTITY: ['QUANTITY', 'QTY'], UNITPRICE: ['UNITPRICE', 'HARGA SATUAN'], ITEMUNIT: ['ITEMUNIT', 'SATUAN'], CURRENCYNAME: ['CURRENCYNAME', 'CURRENCY'] 
+                } 
+            },
+            'RI': { title: 'Received Item', desc: 'Konversi Penerimaan Barang dari pemasok.', 
+                rules: { 
+                    RIID: ['SEQUENCENO', 'RIID', 'NO RI'], RIDATE: ['INVOICEDATE', 'DATE', 'TANGGAL'], VENDORID: ['VENDORID', 'KODE PEMASOK'], ITEMNO: ['ITEMNO', 'KODE BARANG'], QUANTITY: ['QUANTITY', 'QTY'], WAREHOUSEID: ['WAREHOUSEID', 'GUDANG'] 
+                } 
+            },
+            'PI': { title: 'Purchase Invoice', desc: 'Konversi Faktur Pembelian dari pemasok.', 
+                rules: { 
+                    INVOICENO: ['INVOICENO', 'NO FAKTUR'], INVOICEDATE: ['INVOICEDATE', 'TANGGAL FAKTUR', 'DATE'], VENDORID: ['VENDORID', 'KODE PEMASOK'], ITEMNO: ['ITEMNO', 'KODE BARANG'], QUANTITY: ['QUANTITY', 'QTY'], UNITPRICE: ['UNITPRICE', 'HARGA SATUAN'], ITEMUNIT: ['ITEMUNIT', 'SATUAN'], WAREHOUSEID: ['WAREHOUSEID', 'GUDANG'], CURRENCYNAME: ['CURRENCYNAME', 'CURRENCY'] 
+                } 
+            },
+            'PUR_RET': { title: 'Purchase Return', desc: 'Konversi Retur Pembelian ke pemasok.', 
+                rules: { 
+                    INVOICENO: ['INVOICENO', 'NO RETUR', 'RETURN NO'], INVOICEDATE: ['INVOICEDATE', 'TANGGAL RETUR', 'DATE'], VENDORID: ['VENDORID', 'KODE PEMASOK'], ITEMNO: ['ITEMNO', 'KODE BARANG'], QUANTITY: ['QUANTITY', 'QTY'], APINVOICEID: ['APINVOICEID', 'FAKTUR ASLI'], RECEIVEITEMID: ['RECEIVEITEMID', 'RI ASLI'] 
+                } 
+            },
+            'VP': { title: 'Vendor Payment', desc: 'Konversi Pembayaran Kas/Bank ke pemasok.', 
+                rules: { 
+                    SEQUENCENO: ['SEQUENCENO', 'NO BUKTI', 'VP NO'], PAYMENTDATE: ['PAYMENTDATE', 'TANGGAL BAYAR', 'DATE'], VENDORID: ['VENDORID', 'KODE PEMASOK'], BANKACCNT: ['BANKACCNT', 'AKUN BANK'], APINVOICEID: ['APINVOICEID', 'NO FAKTUR'], PAYMENTAMOUNT: ['PAYMENTAMOUNT', 'JUMLAH BAYAR'], CURRENCYNAME: ['CURRENCYNAME', 'CURRENCY'] 
+                } 
+            },
+            'IT': { title: 'Item Transfer', desc: 'Konversi transaksi Pindah Barang antar gudang.', 
+                rules: { 
+                    TRANSFERNO: ['TRANSFERNO', 'NO TRANSFER', 'NO BUKTI'], TRANSFERDATE: ['TRANSFERDATE', 'TANGGAL', 'DATE'], FROMWHID: ['FROMWHID', 'GUDANG ASAL'], TOWHID: ['TOWHID', 'GUDANG TUJUAN'], ITEMNO: ['ITEMNO', 'KODE BARANG'], QUANTITY: ['QUANTITY', 'QTY'], ITEMUNIT: ['ITEMUNIT', 'SATUAN'] 
+                } 
+            },
+            'OP': { title: 'Other Payment', desc: 'Konversi transaksi Pembayaran Lainnya (Beban, Pajak, dll).', 
+                rules: { 
+                    PAYMENTNO: ['JVNUMBER', 'NO BUKTI', 'PAYMENT NO'], PAYMENTDATE: ['TRANSDATE', 'TANGGAL', 'DATE'], BANKACCOUNT: ['GLACCOUNT', 'AKUN KAS/BANK'], PAYEE: ['PAYEE', 'PENERIMA'], LINE_ACCOUNT: ['AccountLine_GLACCOUNT', 'KODE AKUN BIAYA'], LINE_AMOUNT: ['GLAMOUNT', 'JUMLAH'], LINE_MEMO: ['DESCRIPTION', 'KETERANGAN'] 
+                } 
+            },
+            'OD': { title: 'Other Deposit', desc: 'Konversi transaksi Penerimaan Lainnya.', 
+                rules: { 
+                    DEPOSITNO: ['JVNUMBER', 'NO BUKTI', 'DEPOSIT NO'], DEPOSITDATE: ['TRANSDATE', 'TANGGAL', 'DATE'], BANKACCOUNT: ['GLACCOUNT3', 'AKUN KAS/BANK'], LINE_ACCOUNT: ['AccountLine_GLACCOUNT', 'KODE AKUN SUMBER'], LINE_AMOUNT: ['GLAMOUNT', 'AMOUNT', 'JUMLAH'], LINE_MEMO: ['DESCRIPTION', 'KETERANGAN'] 
+                } 
+            }
+        };
+
+        // --- AUTHENTICATION LOGIC ---
+        function checkAuth() {
+            const isAuth = sessionStorage.getItem('isAuthenticated') === 'true' || localStorage.getItem('isAuthenticated') === 'true';
+            if (isAuth) {
+                showApp();
+            } else {
+                showLogin();
+            }
+        }
+
+        function showApp() {
+            loginContainer.classList.add('hidden');
+            appContainer.classList.remove('hidden');
+            switchModule('JV');
+        }
+
+        function showLogin() {
+            loginContainer.classList.remove('hidden');
+            appContainer.classList.add('hidden');
+            usernameInput.value = '';
+            passwordInput.value = '';
+        }
+
+        function handleLogin(e) {
+            e.preventDefault();
+            const username = usernameInput.value.trim();
+            const password = passwordInput.value;
+
+            if (username === 'admin' && password === 'accurate123') {
+                loginError.classList.add('hidden');
+                if (rememberMe.checked) {
+                    localStorage.setItem('isAuthenticated', 'true');
+                } else {
+                    sessionStorage.setItem('isAuthenticated', 'true');
+                }
+                showApp();
+                showToast("Berhasil masuk!");
+            } else {
+                loginError.classList.remove('hidden');
+                loginError.innerText = "Username atau password salah.";
+            }
+        }
+
+        function handleLogout() {
+            sessionStorage.removeItem('isAuthenticated');
+            localStorage.removeItem('isAuthenticated');
+            showLogin();
+            showToast("Berhasil keluar.");
+        }
+
+        // --- CONVERTER LOGIC ---
+        function switchModule(mod) {
+            currentModule = mod;
+            document.querySelectorAll('.sidebar-item').forEach(el => el.classList.remove('active'));
+            const activeBtn = document.getElementById(`btn-${mod}`);
+            if (activeBtn) activeBtn.classList.add('active');
+            
+            moduleTitle.innerText = moduleConfigs[mod].title;
+            moduleDesc.innerText = moduleConfigs[mod].desc;
+            mobileModuleLabel.innerText = mod;
+            
+            resetFile();
+        }
+
+        function resetFile() {
+            excelData = [];
+            headers = [];
+            mapping = {};
+            groupKey = '';
+            dropZone.classList.remove('hidden');
+            resultArea.classList.add('hidden');
+            fileInput.value = '';
+            detectionLog.innerHTML = '';
+        }
+
+        dropZone.onclick = () => fileInput.click();
+        fileInput.onchange = (e) => handleFile(e.target.files[0]);
+        dropZone.ondragover = (e) => { e.preventDefault(); dropZone.classList.add('active'); };
+        dropZone.ondragleave = () => dropZone.classList.remove('active');
+        dropZone.ondrop = (e) => { e.preventDefault(); dropZone.classList.remove('active'); handleFile(e.dataTransfer.files[0]); };
+
+        function handleFile(file) {
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const data = new Uint8Array(e.target.result);
+                const workbook = XLSX.read(data, { type: 'array', cellDates: true });
+                const ws = workbook.Sheets[workbook.SheetNames[0]];
+                excelData = XLSX.utils.sheet_to_json(ws);
+                if (excelData.length > 0) {
+                    headers = Object.keys(excelData[0]);
+                    autoDetect();
+                    fileNameLabel.innerText = file.name;
+                    fileStats.innerText = `${excelData.length} baris data ditemukan.`;
+                    dropZone.classList.add('hidden');
+                    resultArea.classList.remove('hidden');
+                }
+            };
+            reader.readAsArrayBuffer(file);
+        }
+
+        function autoDetect() {
+            mapping = {};
+            detectionLog.innerHTML = "";
+            const rules = moduleConfigs[currentModule].rules;
+            for (const [tag, keywords] of Object.entries(rules)) {
+                const match = headers.find(h => keywords.includes(h.toUpperCase().trim()));
+                if (match) { mapping[tag] = match; addLog(`✓ ${tag} -> "${match}"`); } 
+                else { addLog(`! ${tag} tidak ditemukan.`); }
+            }
+            groupKey = mapping['DEPOSITNO'] || mapping['PAYMENTNO'] || mapping['INVOICENO'] || mapping['JVNUMBER'] || mapping['TRANSFERNO'] || mapping['SEQUENCENO'] || mapping['PONO'] || mapping['REQNO'] || mapping['RIID'] || headers[0];
+            addLog(`✓ Grouping by: "${groupKey}"`);
+        }
+
+        function addLog(text) { const p = document.createElement('p'); p.innerText = text; detectionLog.appendChild(p); }
+
+        convertBtn.onclick = () => {
+            if (excelData.length === 0) return;
+            const groups = {};
+            excelData.forEach(row => {
+                const id = row[groupKey];
+                if (!groups[id]) groups[id] = [];
+                groups[id].push(row);
+            });
+
+            const headRow = excelData[0];
+            const eximId = headRow['EximID'] || "1";
+            const branch = headRow['BranchCode'] || "1942617294";
+
+            let xml = `<?xml version="1.0" encoding="UTF-8"?>\n<NMEXML EximID="${eximId}" BranchCode="${branch}" ACCOUNTANTCOPYID="">\n  <TRANSACTIONS OnError="CONTINUE">\n`;
+
+            Object.keys(groups).forEach((id, index) => {
+                const rows = groups[id];
+                const head = rows[0];
+                switch(currentModule) {
+                    case 'JV': xml += generateJVBlock(rows, head, index); break;
+                    case 'SI': xml += generateSIBlock(rows, head, index); break;
+                    case 'SO': xml += generateSOBlock(rows, head, index); break;
+                    case 'SR': xml += generateSRBlock(rows, head, index); break;
+                    case 'DO': xml += generateDOBlock(rows, head, index); break;
+                    case 'PR': xml += generatePRBlock(rows, head, index); break;
+                    case 'PO': xml += generatePOBlock(rows, head, index); break;
+                    case 'RI': xml += generateRIBlock(rows, head, index); break;
+                    case 'PI': xml += generatePIBlock(rows, head, index); break;
+                    case 'PUR_RET': xml += generatePURNBlock(rows, head, index); break;
+                    case 'VP': xml += generateVPBlock(rows, head, index); break;
+                    case 'CR': xml += generateCRBlock(rows, head, index); break;
+                    case 'IT': xml += generateITBlock(rows, head, index); break;
+                    case 'OP': xml += generateOPBlock(rows, head, index); break;
+                    case 'OD': xml += generateODBlock(rows, head, index); break;
+                }
+            });
+
+            xml += `  </TRANSACTIONS>\n</NMEXML>`;
+            downloadFile(xml, `Accurate_${currentModule}_${new Date().getTime()}.xml`);
+        };
+
+        // --- All Module Generators ---
+        function generateJVBlock(rows, head, idx) {
+            let b = `    <JV operation="Add" REQUESTID="${idx+1}">\n      <JVNUMBER>${escapeXml(head[mapping['JVNUMBER']])}</JVNUMBER>\n      <TRANSDATE>${formatDate(head[mapping['TRANSDATE']])}</TRANSDATE>\n      <SOURCE>GL</SOURCE><TRANSTYPE>journal voucher</TRANSTYPE>\n      <TRANSDESCRIPTION>${escapeXml(head[mapping['TRANSDESCRIPTION']]||'')}</TRANSDESCRIPTION>\n      <JVAMOUNT>${calculateSum(rows, mapping['GLAMOUNT'], true)}</JVAMOUNT>\n`;
+            rows.forEach((r, i) => {
+                b += `      <ACCOUNTLINE operation="Add"><KeyID>${i}</KeyID><GLACCOUNT>${escapeXml(r[mapping['GLACCOUNT']])}</GLACCOUNT><GLAMOUNT>${r[mapping['GLAMOUNT']]||0}</GLAMOUNT><DESCRIPTION>${escapeXml(r[mapping['DESCRIPTION']]||'')}</DESCRIPTION><RATE>1</RATE><PRIMEAMOUNT>${r[mapping['GLAMOUNT']]||0}</PRIMEAMOUNT><CURRENCYNAME>${escapeXml(r[mapping['CURRENCYNAME']]||'IDR')}</CURRENCYNAME>`;
+                if(r[mapping['CUSTOMERNO']]) b += `<CUSTOMERNO>${escapeXml(r[mapping['CUSTOMERNO']])}</CUSTOMERNO>`;
+                if(r[mapping['VENDORNO']]) b += `<VENDORNO>${escapeXml(r[mapping['VENDORNO']])}</VENDORNO>`;
+                b += `</ACCOUNTLINE>\n`;
+            });
+            return b + `    </JV>\n`;
+        }
+
+        function generateSIBlock(rows, head, idx) {
+            let b = `    <SALESINVOICE operation="Add" REQUESTID="${idx+1}">\n      <INVOICENO>${escapeXml(head[mapping['INVOICENO']])}</INVOICENO><INVOICEDATE>${formatDate(head[mapping['INVOICEDATE']])}</INVOICEDATE><CUSTOMERID>${escapeXml(head[mapping['CUSTOMERID']])}</CUSTOMERID><CURRENCYNAME>${escapeXml(head[mapping['CURRENCYNAME']]||'IDR')}</CURRENCYNAME>\n`;
+            rows.forEach((r, i) => { b += `      <ITEMLINE operation="Add"><ITEMNO>${escapeXml(r[mapping['ITEMNO']])}</ITEMNO><QUANTITY>${r[mapping['QUANTITY']]||0}</QUANTITY><UNITPRICE>${r[mapping['UNITPRICE']]||0}</UNITPRICE><ITEMUNIT>${escapeXml(r[mapping['ITEMUNIT']]||'')}</ITEMUNIT></ITEMLINE>\n`; });
+            return b + `    </SALESINVOICE>\n`;
+        }
+
+        function generateSOBlock(rows, head, idx) {
+            let b = `    <SALESORDER operation="Add" REQUESTID="${idx+1}">\n      <SONO>${escapeXml(head[mapping['SONO']])}</SONO><SODATE>${formatDate(head[mapping['SODATE']])}</SODATE><CUSTOMERID>${escapeXml(head[mapping['CUSTOMERID']])}</CUSTOMERID>\n`;
+            rows.forEach((r, i) => { b += `      <ITEMLINE operation="Add"><ITEMNO>${escapeXml(r[mapping['ITEMNO']])}</ITEMNO><QUANTITY>${r[mapping['QUANTITY']]||0}</QUANTITY><UNITPRICE>${r[mapping['UNITPRICE']]||0}</UNITPRICE></ITEMLINE>\n`; });
+            return b + `    </SALESORDER>\n`;
+        }
+
+        function generateSRBlock(rows, head, idx) {
+            let b = `    <SALESRETURN operation="Add" REQUESTID="${idx+1}">\n      <INVOICENO>${escapeXml(head[mapping['INVOICENO']])}</INVOICENO><INVOICEDATE>${formatDate(head[mapping['INVOICEDATE']])}</INVOICEDATE><CUSTOMERID>${escapeXml(head[mapping['CUSTOMERID']])}</CUSTOMERID>\n`;
+            rows.forEach((r, i) => { b += `      <ITEMLINE operation="Add"><ITEMNO>${escapeXml(r[mapping['ITEMNO']])}</ITEMNO><QUANTITY>${r[mapping['QUANTITY']]||0}</QUANTITY></ITEMLINE>\n`; });
+            return b + `    </SALESRETURN>\n`;
+        }
+
+        function generateDOBlock(rows, head, idx) {
+            let b = `    <DELIVERYORDER operation="Add" REQUESTID="${idx+1}">\n      <DELIVERYORDERNO>${escapeXml(head[mapping['DELIVERYORDERNO']])}</DELIVERYORDERNO><SHIPDATE>${formatDate(head[mapping['SHIPDATE']])}</SHIPDATE><CUSTOMERID>${escapeXml(head[mapping['CUSTOMERID']])}</CUSTOMERID>\n`;
+            rows.forEach((r, i) => { b += `      <ITEMLINE operation="Add"><ITEMNO>${escapeXml(r[mapping['ITEMNO']])}</ITEMNO><QUANTITY>${r[mapping['QUANTITY']]||0}</QUANTITY></ITEMLINE>\n`; });
+            return b + `    </DELIVERYORDER>\n`;
+        }
+
+        function generatePRBlock(rows, head, idx) {
+            let b = `    <PURCHASEREQUEST operation="Add" REQUESTID="${idx+1}">\n      <REQNO>${escapeXml(head[mapping['REQNO']])}</REQNO><REQDATE>${formatDate(head[mapping['REQDATE']])}</REQDATE>\n`;
+            rows.forEach((r, i) => { b += `      <ITEMLINE operation="Add"><ITEMNO>${escapeXml(r[mapping['ITEMNO']])}</ITEMNO><QUANTITY>${r[mapping['QUANTITY']]||0}</QUANTITY></ITEMLINE>\n`; });
+            return b + `    </PURCHASEREQUEST>\n`;
+        }
+
+        function generatePOBlock(rows, head, idx) {
+            let b = `    <PURCHASEORDER operation="Add" REQUESTID="${idx+1}">\n      <PONO>${escapeXml(head[mapping['PONO']])}</PONO><PODATE>${formatDate(head[mapping['PODATE']])}</PODATE><VENDORREF>${escapeXml(head[mapping['VENDORREF']])}</VENDORREF>\n`;
+            rows.forEach((r, i) => { b += `      <ITEMLINE operation="Add"><ITEMNO>${escapeXml(r[mapping['ITEMNO']])}</ITEMNO><QUANTITY>${r[mapping['QUANTITY']]||0}</QUANTITY><UNITPRICE>${r[mapping['UNITPRICE']]||0}</UNITPRICE></ITEMLINE>\n`; });
+            return b + `    </PURCHASEORDER>\n`;
+        }
+
+        function generateRIBlock(rows, head, idx) {
+            let b = `    <RECEIVEITEM operation="Add" REQUESTID="${idx+1}">\n      <RECEIVEITEMNO>${escapeXml(head[mapping['RIID']])}</RECEIVEITEMNO><RECEIVEITEMDATE>${formatDate(head[mapping['RIDATE']])}</RECEIVEITEMDATE><VENDORID>${escapeXml(head[mapping['VENDORID']])}</VENDORID>\n`;
+            rows.forEach((r, i) => { b += `      <ITEMLINE operation="Add"><ITEMNO>${escapeXml(r[mapping['ITEMNO']])}</ITEMNO><QUANTITY>${r[mapping['QUANTITY']]||0}</QUANTITY></ITEMLINE>\n`; });
+            return b + `    </RECEIVEITEM>\n`;
+        }
+
+        function generatePIBlock(rows, head, idx) {
+            let b = `    <PURCHASEINVOICE operation="Add" REQUESTID="${idx+1}">\n      <INVOICENO>${escapeXml(head[mapping['INVOICENO']])}</INVOICENO><INVOICEDATE>${formatDate(head[mapping['INVOICEDATE']])}</INVOICEDATE><VENDORID>${escapeXml(head[mapping['VENDORID']])}</VENDORID>\n`;
+            rows.forEach((r, i) => { b += `      <ITEMLINE operation="Add"><ITEMNO>${escapeXml(r[mapping['ITEMNO']])}</ITEMNO><QUANTITY>${r[mapping['QUANTITY']]||0}</QUANTITY><UNITPRICE>${r[mapping['UNITPRICE']]||0}</UNITPRICE></ITEMLINE>\n`; });
+            return b + `    </PURCHASEINVOICE>\n`;
+        }
+
+        function generatePURNBlock(rows, head, idx) {
+            let b = `    <PURCHASERETURN operation="Add" REQUESTID="${idx+1}">\n      <INVOICENO>${escapeXml(head[mapping['INVOICENO']])}</INVOICENO><INVOICEDATE>${formatDate(head[mapping['INVOICEDATE']])}</INVOICEDATE><VENDORID>${escapeXml(head[mapping['VENDORID']])}</VENDORID>\n`;
+            rows.forEach((r, i) => { b += `      <ITEMLINE operation="Add"><ITEMNO>${escapeXml(r[mapping['ITEMNO']])}</ITEMNO><QUANTITY>${r[mapping['QUANTITY']]||0}</QUANTITY>`;
+            if(r[mapping['APINVOICEID']]) b += `<APINVOICEID>${escapeXml(r[mapping['APINVOICEID']])}</APINVOICEID>`;
+            if(r[mapping['RECEIVEITEMID']]) b += `<RECEIVEITEMID>${escapeXml(r[mapping['RECEIVEITEMID']])}</RECEIVEITEMID>`;
+            b += `</ITEMLINE>\n`; });
+            return b + `    </PURCHASERETURN>\n`;
+        }
+
+        function generateVPBlock(rows, head, idx) {
+            let b = `    <VENDORPAYMENT operation="Add" REQUESTID="${idx+1}">\n      <SEQUENCENO>${escapeXml(head[mapping['SEQUENCENO']])}</SEQUENCENO><PAYMENTDATE>${formatDate(head[mapping['PAYMENTDATE']])}</PAYMENTDATE><VENDORID>${escapeXml(head[mapping['VENDORID']])}</VENDORID><BANKACCNT>${escapeXml(head[mapping['BANKACCNT']])}</BANKACCNT>\n`;
+            rows.forEach((r, i) => { b += `      <PAYMENTLINE operation="Add"><APINVOICEID>${escapeXml(r[mapping['APINVOICEID']])}</APINVOICEID><PAYMENTAMOUNT>${r[mapping['PAYMENTAMOUNT']]||0}</PAYMENTAMOUNT></PAYMENTLINE>\n`; });
+            return b + `    </VENDORPAYMENT>\n`;
+        }
+
+        function generateCRBlock(rows, head, idx) {
+            let b = `    <CUSTRECEIPT operation="Add" REQUESTID="${idx+1}">\n      <SEQUENCENO>${escapeXml(head[mapping['SEQUENCENO']])}</SEQUENCENO><PAYMENTDATE>${formatDate(head[mapping['PAYMENTDATE']])}</PAYMENTDATE><BILLTOID>${escapeXml(head[mapping['BILLTOID']])}</BILLTOID><BANKACCOUNT>${escapeXml(head[mapping['BANKACCOUNT']])}</BANKACCOUNT>\n`;
+            rows.forEach((r, i) => { b += `      <PAYMENTLINE operation="Add"><ARINVOICEID>${escapeXml(r[mapping['ARINVOICEID']])}</ARINVOICEID><PAYMENTAMOUNT>${r[mapping['PAYMENTAMOUNT']]||0}</PAYMENTAMOUNT></PAYMENTLINE>\n`; });
+            return b + `    </CUSTRECEIPT>\n`;
+        }
+
+        function generateITBlock(rows, head, idx) {
+            let b = `    <ITEMTRANSFER operation="Add" REQUESTID="${idx+1}">\n      <TRANSFERNO>${escapeXml(head[mapping['TRANSFERNO']])}</TRANSFERNO><TRANSFERDATE>${formatDate(head[mapping['TRANSFERDATE']])}</TRANSFERDATE><FROMWHID>${escapeXml(head[mapping['FROMWHID']])}</FROMWHID><TOWHID>${escapeXml(head[mapping['TOWHID']])}</TOWHID>\n`;
+            rows.forEach((r, i) => { b += `      <ITEMLINE operation="Add"><ITEMNO>${escapeXml(r[mapping['ITEMNO']])}</ITEMNO><QUANTITY>${r[mapping['QUANTITY']]||0}</QUANTITY><ITEMUNIT>${escapeXml(r[mapping['ITEMUNIT']]||'')}</ITEMUNIT></ITEMLINE>\n`; });
+            return b + `    </ITEMTRANSFER>\n`;
+        }
+
+        function generateOPBlock(rows, head, idx) {
+            let b = `    <OTHERPAYMENT operation="Add" REQUESTID="${idx+1}">\n      <PAYMENTNO>${escapeXml(head[mapping['PAYMENTNO']])}</PAYMENTNO><PAYMENTDATE>${formatDate(head[mapping['PAYMENTDATE']])}</PAYMENTDATE><BANKACCOUNT>${escapeXml(head[mapping['BANKACCOUNT']])}</BANKACCOUNT><PAYEE>${escapeXml(head[mapping['PAYEE']]||'')}</PAYEE><PAYMENTAMOUNT>${calculateSum(rows, mapping['LINE_AMOUNT'])}</PAYMENTAMOUNT>\n`;
+            rows.forEach((r, i) => { b += `      <PAYMENTLINE operation="Add"><KeyID>${i}</KeyID><GLACCOUNT>${escapeXml(r[mapping['LINE_ACCOUNT']])}</GLACCOUNT><AMOUNT>${r[mapping['LINE_AMOUNT']]||0}</AMOUNT><MEMO>${escapeXml(r[mapping['LINE_MEMO']]||'')}</MEMO></PAYMENTLINE>\n`; });
+            return b + `    </OTHERPAYMENT>\n`;
+        }
+
+        function generateODBlock(rows, head, idx) {
+            let b = `    <OTHERDEPOSIT operation="Add" REQUESTID="${idx+1}">\n      <DEPOSITNO>${escapeXml(head[mapping['DEPOSITNO']])}</DEPOSITNO><DEPOSITDATE>${formatDate(head[mapping['DEPOSITDATE']])}</DEPOSITDATE><BANKACCOUNT>${escapeXml(head[mapping['BANKACCOUNT']])}</BANKACCOUNT><DEPOSITAMOUNT>${calculateSum(rows, mapping['LINE_AMOUNT'])}</DEPOSITAMOUNT>\n`;
+            rows.forEach((r, i) => { b += `      <DEPOSITLINE operation="Add"><KeyID>${i}</KeyID><GLACCOUNT>${escapeXml(r[mapping['LINE_ACCOUNT']])}</GLACCOUNT><AMOUNT>${r[mapping['LINE_AMOUNT']]||0}</AMOUNT><MEMO>${escapeXml(r[mapping['LINE_MEMO']]||'')}</MEMO></DEPOSITLINE>\n`; });
+            return b + `    </OTHERDEPOSIT>\n`;
+        }
+
+        // --- Helpers ---
+        function formatDate(val) {
+            if (!val) return "";
+            let d = (val instanceof Date) ? val : (typeof val === 'number' ? new Date((val - 25569) * 86400 * 1000) : new Date(val));
+            if (isNaN(d.getTime())) { const p = String(val).match(/^(\d{1,2})[-/](\d{1,2})[-/](\d{4})$/); if (p) d = new Date(p[3], p[2]-1, p[1]); }
+            return isNaN(d.getTime()) ? val : `${String(d.getDate()).padStart(2,'0')}/${String(d.getMonth()+1).padStart(2,'0')}/${d.getFullYear()} 00:00:00`;
+        }
+        function calculateSum(rows, field, posOnly = false) { return rows.reduce((s, r) => { const v = parseFloat(r[field]) || 0; return posOnly ? (v > 0 ? s + v : s) : s + v; }, 0); }
+        function escapeXml(unsafe) { return unsafe ? String(unsafe).replace(/[<>&"']/g, c => ({'<':'&lt;','>':'&gt;','&':'&amp;','"':'&quot;',"'":'&apos;'}[c])) : ""; }
+        function downloadFile(content, name) {
+            const blob = new Blob([content], { type: 'text/xml' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a'); a.href = url; a.download = name;
+            document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url);
+            showToast("XML Berhasil diunduh.");
+        }
+        function showToast(msg) {
+            const toast = document.getElementById('toast');
+            document.getElementById('toastMsg').innerText = msg;
+            toast.classList.remove('translate-y-20', 'opacity-0');
+            setTimeout(() => toast.classList.add('translate-y-20', 'opacity-0'), 3000);
+        }
+
+        // Jalankan pemeriksaan login saat DOM selesai dimuat
+        window.addEventListener('DOMContentLoaded', checkAuth);
+    </script>
+</body>
+</html>
