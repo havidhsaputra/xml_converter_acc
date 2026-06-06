@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>XML Converter Accurate</title>
+	<link rel="icon" type="image/png" href="favicon.png">
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <style>
@@ -16,6 +17,20 @@
         .custom-scrollbar::-webkit-scrollbar { width: 4px; }
         .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
         .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+        
+        /* Mencegah seleksi teks di seluruh halaman untuk perlindungan tambahan */
+        body {
+            -webkit-user-select: none; /* Safari */
+            -ms-user-select: none; /* IE 10 and Consumer Preview */
+            user-select: none; /* Standard syntax */
+        }
+        
+        /* Izinkan seleksi teks hanya untuk input form */
+        input, select, textarea {
+            -webkit-user-select: text;
+            -ms-user-select: text;
+            user-select: text;
+        }
     </style>
 </head>
 <body class="bg-slate-50 min-h-screen flex items-stretch">
@@ -73,7 +88,7 @@
         <aside class="w-64 bg-white border-r border-slate-200 flex-shrink-0 hidden md:flex flex-col h-screen sticky top-0 shadow-sm">
             <div class="p-6 border-b border-slate-100">
                 <h1 class="text-xl font-bold text-slate-800">XML Converter</h1>
-                <p class="text-[10px] text-blue-600 font-bold uppercase tracking-widest">Vercel Production Ready</p>
+                <p class="text-[10px] text-blue-600 font-bold uppercase tracking-widest">For Accurate Desktop</p>
             </div>
             <nav class="flex-1 p-4 space-y-1 overflow-y-auto custom-scrollbar">
                 <!-- Penjualan Section -->
@@ -224,7 +239,56 @@
             },
             'SI': { title: 'Sales Invoice', desc: 'Konversi Faktur Penjualan ke pelanggan.', 
                 rules: { 
-                    INVOICENO: ['INVOICENO', 'NO FAKTUR', 'INVOICE NO'], INVOICEDATE: ['INVOICEDATE', 'TANGGAL FAKTUR', 'DATE'], CUSTOMERID: ['CUSTOMERID', 'KODE PELANGGAN'], ITEMNO: ['ITEMNO', 'KODE BARANG'], QUANTITY: ['QUANTITY', 'QTY'], UNITPRICE: ['UNITPRICE', 'HARGA SATUAN'], ITEMUNIT: ['ITEMUNIT', 'SATUAN'], WAREHOUSEID: ['WAREHOUSEID', 'GUDANG'], PROJECTID: ['PROJECTID', 'PROYEK'], DEPTID: ['DEPTID', 'DEPARTEMEN'], CURRENCYNAME: ['CURRENCYNAME', 'CURRENCY'] 
+                    // Header Mappings
+                    TRANSACTIONID: ['TRANSACTIONID', 'TXID', 'TRANSAKSI ID', 'ID'],
+                    INVOICENO: ['INVOICENO', 'NO FAKTUR', 'INVOICE NO', 'NOFAKTUR'], 
+                    INVOICEDATE: ['INVOICEDATE', 'TANGGAL FAKTUR', 'DATE', 'TANGGAL'], 
+                    CUSTOMERID: ['CUSTOMERID', 'KODE PELANGGAN', 'CUSTOMER ID'], 
+                    TAX1ID: ['TAX1ID', 'TAX1_ID', 'ID PAJAK 1'],
+                    TAX1CODE: ['TAX1CODE', 'KODE PAJAK 1', 'TAX1_CODE'],
+                    TAX2CODE: ['TAX2CODE', 'KODE PAJAK 2', 'TAX2_CODE'],
+                    TAX1RATE: ['TAX1RATE', 'RATE PAJAK 1', 'TAX1_RATE'],
+                    TAX2RATE: ['TAX2RATE', 'RATE PAJAK 2', 'TAX2_RATE'],
+                    RATE: ['RATE', 'KURS'],
+                    INCLUSIVETAX: ['INCLUSIVETAX', 'TERMASUK PAJAK'],
+                    CUSTOMERISTAXABLE: ['CUSTOMERISTAXABLE', 'KENA PAJAK'],
+                    CASHDISCOUNT: ['CASHDISCOUNT', 'DISKON TUNAI'],
+                    CASHDISCPC: ['CASHDISCPC', 'PERSEN DISKON TUNAI'],
+                    INVOICEAMOUNT: ['INVOICEAMOUNT', 'TOTAL FAKTUR', 'AMOUNT'],
+                    FREIGHT: ['FREIGHT', 'ONGKIR', 'ONGKOS KIRIM'],
+                    TERMSID: ['TERMSID', 'SYARAT BAYAR', 'TERM', 'TERMS'],
+                    SHIPVIA: ['SHIPVIA', 'KIRIM VIA', 'EKSPEDISI'],
+                    FOB: ['FOB'],
+                    PURCHASEORDERNO: ['PURCHASEORDERNO', 'NO PO', 'PONO'],
+                    WAREHOUSEID: ['WAREHOUSEID', 'GUDANG', 'WAREHOUSE'],
+                    DESCRIPTION: ['DESCRIPTION', 'KETERANGAN', 'REMARKS'],
+                    SHIPDATE: ['SHIPDATE', 'TANGGAL KIRIM'],
+                    TAXDATE: ['TAXDATE', 'TANGGAL PAJAK'],
+                    SALESMAN_FIRSTNAME: ['SALESMAN_FIRSTNAME', 'SALESMAN FIRSTNAME', 'FIRSTNAME'],
+                    SALESMAN_LASTNAME: ['SALESMAN_LASTNAME', 'SALESMAN LASTNAME', 'LASTNAME'],
+                    PRINTED: ['PRINTED'],
+                    SHIPTO1: ['SHIPTO1', 'ALAMAT KIRIM 1'],
+                    SHIPTO2: ['SHIPTO2', 'ALAMAT KIRIM 2'],
+                    SHIPTO3: ['SHIPTO3', 'ALAMAT KIRIM 3'],
+                    SHIPTO4: ['SHIPTO4', 'ALAMAT KIRIM 4'],
+                    SHIPTO5: ['SHIPTO5', 'ALAMAT KIRIM 5'],
+                    ARACCOUNT: ['ARACCOUNT', 'AKUN PIUTANG', 'AR ACCOUNT'],
+                    TAXFORMNUMBER: ['TAXFORMNUMBER', 'NO SERI PAJAK', 'TAX FORM NUMBER'],
+                    TAXFORMCODE: ['TAXFORMCODE', 'KODE SERI PAJAK', 'TAX FORM CODE'],
+                    CURRENCYNAME: ['CURRENCYNAME', 'CURRENCY', 'MATA UANG'],
+                    
+                    // Line Item Mappings
+                    ITEMNO: ['ITEMNO', 'KODE BARANG', 'ITEM NO', 'PARTNO'], 
+                    QUANTITY: ['QUANTITY', 'QTY', 'JUMLAH'], 
+                    ITEMUNIT: ['ITEMUNIT', 'SATUAN BARANG', 'ITEM_UNIT'],
+                    UNITRATIO: ['UNITRATIO', 'RASIO SATUAN', 'UNIT_RATIO'],
+                    ITEMOVDESC: ['ITEMOVDESC', 'DESKRIPSI BARANG', 'ITEMDESC', 'KETERANGAN BARANG'],
+                    UNITPRICE: ['UNITPRICE', 'HARGA SATUAN', 'PRICE'], 
+                    ITEMDISCPC: ['ITEMDISCPC', 'DISKON BARANG', 'ITEM_DISC'],
+                    TAXCODES: ['TAXCODES', 'TAX_CODES', 'KODE PAJAK BARANG'],
+                    BRUTOUNITPRICE: ['BRUTOUNITPRICE', 'HARGA BRUTO', 'BRUTO_PRICE'],
+                    PROJECTID: ['PROJECTID', 'PROYEK'], 
+                    DEPTID: ['DEPTID', 'DEPARTEMEN']
                 } 
             },
             'SO': { title: 'Sales Order', desc: 'Konversi Pesanan Penjualan dari pelanggan.', 
@@ -335,6 +399,46 @@
                 loginError.classList.remove('hidden');
                 loginError.innerText = "Username atau password salah.";
             }
+        }
+
+        // Fitur Pelindung Aplikasi dari Klik Kanan dan DevTools Inspection
+        function enableAppProtection() {
+            // 1. Menonaktifkan Klik Kanan (Context Menu)
+            document.addEventListener('contextmenu', function(e) {
+                e.preventDefault();
+                showToast("Klik kanan dinonaktifkan demi keamanan sistem.");
+            }, false);
+
+            // 2. Memblokir Pintasan Keyboard Developer Tools dan View Source
+            document.addEventListener('keydown', function(e) {
+                // Memblokir F12
+                if (e.keyCode === 123) {
+                    e.preventDefault();
+                    showToast("Akses Developer Tools dinonaktifkan.");
+                    return false;
+                }
+                
+                // Memblokir Ctrl+Shift+I (DevTools Panel), Ctrl+Shift+J (Console), Ctrl+Shift+C (Inspector)
+                if (e.ctrlKey && e.shiftKey && (e.keyCode === 73 || e.keyCode === 74 || e.keyCode === 67)) {
+                    e.preventDefault();
+                    showToast("Akses inspeksi elemen dinonaktifkan.");
+                    return false;
+                }
+                
+                // Memblokir Ctrl+U (View Source)
+                if (e.ctrlKey && e.keyCode === 85) {
+                    e.preventDefault();
+                    showToast("Melihat kode sumber halaman dinonaktifkan.");
+                    return false;
+                }
+                
+                // Memblokir Ctrl+S (Save Page) untuk mencegah pengunduhan markup lokal
+                if (e.ctrlKey && e.keyCode === 83) {
+                    e.preventDefault();
+                    showToast("Menyimpan dokumen halaman ini dinonaktifkan.");
+                    return false;
+                }
+            }, false);
         }
 
         function handleLogout() {
@@ -451,6 +555,30 @@
             downloadFile(xml, `Accurate_${currentModule}_${new Date().getTime()}.xml`);
         };
 
+        function formatDate(val, targetFormat = 'DD/MM/YYYY 00:00:00') {
+            if (!val) return "";
+            let d;
+            if (val instanceof Date) d = val;
+            else if (typeof val === 'number') d = new Date((val - 25569) * 86400 * 1000);
+            else {
+                d = new Date(val);
+                if (isNaN(d.getTime())) {
+                    const parts = String(val).match(/^(\d{1,2})[-/](\d{1,2})[-/](\d{4})$/);
+                    if (parts) d = new Date(parts[3], parts[2] - 1, parts[1]);
+                }
+            }
+            if (!d || isNaN(d.getTime())) return val;
+            
+            const day = String(d.getDate()).padStart(2, '0');
+            const month = String(d.getMonth() + 1).padStart(2, '0');
+            const year = d.getFullYear();
+            
+            if (targetFormat === 'YYYY-MM-DD') {
+                return `${year}-${month}-${day}`;
+            }
+            return `${day}/${month}/${year} 00:00:00`;
+        }
+
         // --- All Module Generators ---
         function generateJVBlock(rows, head, idx) {
             let b = `    <JV operation="Add" REQUESTID="${idx+1}">\n      <JVNUMBER>${escapeXml(head[mapping['JVNUMBER']])}</JVNUMBER>\n      <TRANSDATE>${formatDate(head[mapping['TRANSDATE']])}</TRANSDATE>\n      <SOURCE>GL</SOURCE><TRANSTYPE>journal voucher</TRANSTYPE>\n      <TRANSDESCRIPTION>${escapeXml(head[mapping['TRANSDESCRIPTION']]||'')}</TRANSDESCRIPTION>\n      <JVAMOUNT>${calculateSum(rows, mapping['GLAMOUNT'], true)}</JVAMOUNT>\n`;
@@ -464,9 +592,123 @@
         }
 
         function generateSIBlock(rows, head, idx) {
-            let b = `    <SALESINVOICE operation="Add" REQUESTID="${idx+1}">\n      <INVOICENO>${escapeXml(head[mapping['INVOICENO']])}</INVOICENO><INVOICEDATE>${formatDate(head[mapping['INVOICEDATE']])}</INVOICEDATE><CUSTOMERID>${escapeXml(head[mapping['CUSTOMERID']])}</CUSTOMERID><CURRENCYNAME>${escapeXml(head[mapping['CURRENCYNAME']]||'IDR')}</CURRENCYNAME>\n`;
-            rows.forEach((r, i) => { b += `      <ITEMLINE operation="Add"><ITEMNO>${escapeXml(r[mapping['ITEMNO']])}</ITEMNO><QUANTITY>${r[mapping['QUANTITY']]||0}</QUANTITY><UNITPRICE>${r[mapping['UNITPRICE']]||0}</UNITPRICE><ITEMUNIT>${escapeXml(r[mapping['ITEMUNIT']]||'')}</ITEMUNIT></ITEMLINE>\n`; });
-            return b + `    </SALESINVOICE>\n`;
+            const txId = head[mapping['TRANSACTIONID']] || (idx + 869);
+            let b = `    <SALESINVOICE operation="Add" REQUESTID="${idx + 1}">\n`;
+            b += `      <TRANSACTIONID>${txId}</TRANSACTIONID>\n`;
+
+            rows.forEach((row, rIdx) => {
+                const itemNo = row[mapping['ITEMNO']] || '';
+                const qty = row[mapping['QUANTITY']] || 0;
+                const price = row[mapping['UNITPRICE']] || 0;
+                const itemUnit = row[mapping['ITEMUNIT']] || 'pcs';
+                const itemOvDesc = row[mapping['ITEMOVDESC']] || row[mapping['ITEMDESC']] || '';
+                const taxCodes = row[mapping['TAXCODES']] || 'T';
+                const whId = row[mapping['WAREHOUSEID']] || '';
+                const bruto = row[mapping['BRUTOUNITPRICE']] || price;
+                const unitRatio = row[mapping['UNITRATIO']] || 1;
+                const itemDisc = row[mapping['ITEMDISCPC']] || '';
+
+                b += `      <ITEMLINE operation="Add">\n`;
+                b += `        <KeyID>${rIdx + 1}</KeyID>\n`;
+                b += `        <ITEMNO>${escapeXml(itemNo)}</ITEMNO>\n`;
+                b += `        <QUANTITY>${qty}</QUANTITY>\n`;
+                b += `        <ITEMUNIT>${escapeXml(itemUnit)}</ITEMUNIT>\n`;
+                b += `        <UNITRATIO>${unitRatio}</UNITRATIO>\n`;
+                b += `        <ITEMRESERVED1/><ITEMRESERVED2/><ITEMRESERVED3/><ITEMRESERVED4/><ITEMRESERVED5/><ITEMRESERVED6/><ITEMRESERVED7/><ITEMRESERVED8/><ITEMRESERVED9/><ITEMRESERVED10/>\n`;
+                b += `        <ITEMOVDESC>${escapeXml(itemOvDesc)}</ITEMOVDESC>\n`;
+                b += `        <UNITPRICE>${price}</UNITPRICE>\n`;
+                b += `        <ITEMDISCPC>${itemDisc}</ITEMDISCPC>\n`;
+                b += `        <TAXCODES>${escapeXml(taxCodes)}</TAXCODES>\n`;
+                b += `        <GROUPSEQ/>\n`;
+                b += `        <SOSEQ/>\n`;
+                b += `        <BRUTOUNITPRICE>${bruto}</BRUTOUNITPRICE>\n`;
+                b += `        <WAREHOUSEID>${escapeXml(whId)}</WAREHOUSEID>\n`;
+                b += `        <QTYCONTROL>0</QTYCONTROL>\n`;
+                b += `        <DOSEQ/>\n`;
+                b += `        <DOID/>\n`;
+                b += `      </ITEMLINE>\n`;
+            });
+
+            // Map header elements positioned after ITEMLINE tags
+            const invoiceNo = head[mapping['INVOICENO']] || '';
+            const invoiceDate = formatDate(head[mapping['INVOICEDATE']], 'YYYY-MM-DD');
+            const tax1Id = head[mapping['TAX1ID']] || 'T';
+            const tax1Code = head[mapping['TAX1CODE']] || 'T';
+            const tax2Code = head[mapping['TAX2CODE']] || '';
+            const tax1Rate = head[mapping['TAX1RATE']] || '11';
+            const tax2Rate = head[mapping['TAX2RATE']] || '0';
+            const rate = head[mapping['RATE']] || '1';
+            const inclusiveTax = head[mapping['INCLUSIVETAX']] || '0';
+            const custTaxable = head[mapping['CUSTOMERISTAXABLE']] || '1';
+            const cashDiscount = head[mapping['CASHDISCOUNT']] || '0';
+            const cashDiscPc = head[mapping['CASHDISCPC']] || '';
+            const invoiceAmount = head[mapping['INVOICEAMOUNT']] || '';
+            const freight = head[mapping['FREIGHT']] || '0';
+            const termsId = head[mapping['TERMSID']] || '';
+            const shipVia = head[mapping['SHIPVIA']] || '';
+            const fob = head[mapping['FOB']] || '';
+            const poNo = head[mapping['PURCHASEORDERNO']] || head[mapping['PONO']] || '';
+            const headerWhId = head[mapping['WAREHOUSEID']] || '';
+            const description = head[mapping['DESCRIPTION']] || '';
+            const shipDate = formatDate(head[mapping['SHIPDATE']], 'YYYY-MM-DD');
+            const taxDate = formatDate(head[mapping['TAXDATE']], 'YYYY-MM-DD') || invoiceDate;
+            const custId = head[mapping['CUSTOMERID']] || '';
+            const salesmanFirst = head[mapping['SALESMAN_FIRSTNAME']] || '';
+            const salesmanLast = head[mapping['SALESMAN_LASTNAME']] || '';
+            const printed = head[mapping['PRINTED']] || '0';
+            const shipTo1 = head[mapping['SHIPTO1']] || '';
+            const shipTo2 = head[mapping['SHIPTO2']] || '';
+            const shipTo3 = head[mapping['SHIPTO3']] || '';
+            const shipTo4 = head[mapping['SHIPTO4']] || '';
+            const shipTo5 = head[mapping['SHIPTO5']] || '';
+            const arAccount = head[mapping['ARACCOUNT']] || '';
+            const taxFormNo = head[mapping['TAXFORMNUMBER']] || invoiceNo;
+            const taxFormCode = head[mapping['TAXFORMCODE']] || '';
+            const currencyName = head[mapping['CURRENCYNAME']] || 'IDR';
+
+            b += `      <INVOICENO>${escapeXml(invoiceNo)}</INVOICENO>\n`;
+            b += `      <INVOICEDATE>${invoiceDate}</INVOICEDATE>\n`;
+            b += `      <TAX1ID>${escapeXml(tax1Id)}</TAX1ID>\n`;
+            b += `      <TAX1CODE>${escapeXml(tax1Code)}</TAX1CODE>\n`;
+            b += `      <TAX2CODE>${escapeXml(tax2Code)}</TAX2CODE>\n`;
+            b += `      <TAX1RATE>${tax1Rate}</TAX1RATE>\n`;
+            b += `      <TAX2RATE>${tax2Rate}</TAX2RATE>\n`;
+            b += `      <RATE>${rate}</RATE>\n`;
+            b += `      <INCLUSIVETAX>${inclusiveTax}</INCLUSIVETAX>\n`;
+            b += `      <CUSTOMERISTAXABLE>${custTaxable}</CUSTOMERISTAXABLE>\n`;
+            b += `      <CASHDISCOUNT>${cashDiscount}</CASHDISCOUNT>\n`;
+            b += `      <CASHDISCPC>${escapeXml(cashDiscPc)}</CASHDISCPC>\n`;
+            b += `      <INVOICEAMOUNT>${invoiceAmount}</INVOICEAMOUNT>\n`;
+            b += `      <FREIGHT>${freight}</FREIGHT>\n`;
+            b += `      <TERMSID>${escapeXml(termsId)}</TERMSID>\n`;
+            b += `      <SHIPVIA>${escapeXml(shipVia)}</SHIPVIA>\n`;
+            b += `      <FOB>${escapeXml(fob)}</FOB>\n`;
+            b += `      <PURCHASEORDERNO>${escapeXml(poNo)}</PURCHASEORDERNO>\n`;
+            b += `      <WAREHOUSEID>${escapeXml(headerWhId)}</WAREHOUSEID>\n`;
+            b += `      <DESCRIPTION>${escapeXml(description)}</DESCRIPTION>\n`;
+            b += `      <SHIPDATE>${shipDate}</SHIPDATE>\n`;
+            b += `      <DELIVERYORDER></DELIVERYORDER>\n`;
+            b += `      <FISCALRATE>1</FISCALRATE>\n`;
+            b += `      <TAXDATE>${taxDate}</TAXDATE>\n`;
+            b += `      <CUSTOMERID>${escapeXml(custId)}</CUSTOMERID>\n`;
+            if (salesmanFirst || salesmanLast) {
+                b += `      <SALESMANID><LASTNAME>${escapeXml(salesmanLast)}</LASTNAME><FIRSTNAME>${escapeXml(salesmanFirst)}</FIRSTNAME></SALESMANID>\n`;
+            } else {
+                b += `      <SALESMANID/>\n`;
+            }
+            b += `      <PRINTED>${printed}</PRINTED>\n`;
+            b += `      <SHIPTO1>${escapeXml(shipTo1)}</SHIPTO1>\n`;
+            b += `      <SHIPTO2>${escapeXml(shipTo2)}</SHIPTO2>\n`;
+            b += `      <SHIPTO3>${escapeXml(shipTo3)}</SHIPTO3>\n`;
+            b += `      <SHIPTO4>${escapeXml(shipTo4)}</SHIPTO4>\n`;
+            b += `      <SHIPTO5>${escapeXml(shipTo5)}</SHIPTO5>\n`;
+            b += `      <ARACCOUNT>${escapeXml(arAccount)}</ARACCOUNT>\n`;
+            b += `      <TAXFORMNUMBER>${escapeXml(taxFormNo)}</TAXFORMNUMBER>\n`;
+            b += `      <TAXFORMCODE>${escapeXml(taxFormCode)}</TAXFORMCODE>\n`;
+            b += `      <CURRENCYNAME>${escapeXml(currencyName)}</CURRENCYNAME>\n`;
+            b += `      <AUTOMATICINSERTGROUPING/>\n`;
+            b += `    </SALESINVOICE>\n`;
+            return b;
         }
 
         function generateSOBlock(rows, head, idx) {
@@ -493,6 +735,7 @@
             return b + `    </PURCHASEREQUEST>\n`;
         }
 
+        // --- All Module Generators (Lanjutan) ---
         function generatePOBlock(rows, head, idx) {
             let b = `    <PURCHASEORDER operation="Add" REQUESTID="${idx+1}">\n      <PONO>${escapeXml(head[mapping['PONO']])}</PONO><PODATE>${formatDate(head[mapping['PODATE']])}</PODATE><VENDORREF>${escapeXml(head[mapping['VENDORREF']])}</VENDORREF>\n`;
             rows.forEach((r, i) => { b += `      <ITEMLINE operation="Add"><ITEMNO>${escapeXml(r[mapping['ITEMNO']])}</ITEMNO><QUANTITY>${r[mapping['QUANTITY']]||0}</QUANTITY><UNITPRICE>${r[mapping['UNITPRICE']]||0}</UNITPRICE></ITEMLINE>\n`; });
@@ -551,14 +794,9 @@
         }
 
         // --- Helpers ---
-        function formatDate(val) {
-            if (!val) return "";
-            let d = (val instanceof Date) ? val : (typeof val === 'number' ? new Date((val - 25569) * 86400 * 1000) : new Date(val));
-            if (isNaN(d.getTime())) { const p = String(val).match(/^(\d{1,2})[-/](\d{1,2})[-/](\d{4})$/); if (p) d = new Date(p[3], p[2]-1, p[1]); }
-            return isNaN(d.getTime()) ? val : `${String(d.getDate()).padStart(2,'0')}/${String(d.getMonth()+1).padStart(2,'0')}/${d.getFullYear()} 00:00:00`;
-        }
         function calculateSum(rows, field, posOnly = false) { return rows.reduce((s, r) => { const v = parseFloat(r[field]) || 0; return posOnly ? (v > 0 ? s + v : s) : s + v; }, 0); }
         function escapeXml(unsafe) { return unsafe ? String(unsafe).replace(/[<>&"']/g, c => ({'<':'&lt;','>':'&gt;','&':'&amp;','"':'&quot;',"'":'&apos;'}[c])) : ""; }
+        
         function downloadFile(content, name) {
             const blob = new Blob([content], { type: 'text/xml' });
             const url = URL.createObjectURL(blob);
@@ -566,6 +804,7 @@
             document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url);
             showToast("XML Berhasil diunduh.");
         }
+        
         function showToast(msg) {
             const toast = document.getElementById('toast');
             document.getElementById('toastMsg').innerText = msg;
@@ -573,8 +812,11 @@
             setTimeout(() => toast.classList.add('translate-y-20', 'opacity-0'), 3000);
         }
 
-        // Jalankan pemeriksaan login saat DOM selesai dimuat
-        window.addEventListener('DOMContentLoaded', checkAuth);
+        // Inisialisasi dan jalankan sistem login & proteksi aplikasi saat DOM selesai dimuat
+        window.addEventListener('DOMContentLoaded', () => {
+            checkAuth();
+            enableAppProtection();
+        });
     </script>
 </body>
 </html>
